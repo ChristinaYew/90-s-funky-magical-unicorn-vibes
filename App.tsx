@@ -9,6 +9,7 @@ import { LivePreview } from './components/LivePreview';
 import { CreationHistory, Creation } from './components/CreationHistory';
 import { bringToLife } from './services/gemini';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/solid';
+import { speakGroovy, playDiscoSound } from './services/audio';
 
 const App: React.FC = () => {
   const [activeCreation, setActiveCreation] = useState<Creation | null>(null);
@@ -98,6 +99,7 @@ const App: React.FC = () => {
 
   const handleGenerate = async (promptText: string, file?: File) => {
     setIsGenerating(true);
+    playDiscoSound('start');
     // Clear active creation to show loading state
     setActiveCreation(null);
 
@@ -113,6 +115,8 @@ const App: React.FC = () => {
       const html = await bringToLife(promptText, imageBase64, mimeType);
       
       if (html) {
+        playDiscoSound('success');
+        speakGroovy("Hot off the grill! It's alive!");
         const newCreation: Creation = {
           id: crypto.randomUUID(),
           name: file ? file.name : 'New Creation',
@@ -127,6 +131,8 @@ const App: React.FC = () => {
 
     } catch (error) {
       console.error("Failed to generate:", error);
+      playDiscoSound('error');
+      speakGroovy("Bummer! Something burnt on the grill.");
       alert("Something went wrong while bringing your file to life. Please try again.");
     } finally {
       setIsGenerating(false);
@@ -139,10 +145,13 @@ const App: React.FC = () => {
   };
 
   const handleSelectCreation = (creation: Creation) => {
+    playDiscoSound('magic');
+    speakGroovy("Rewind time!");
     setActiveCreation(creation);
   };
 
   const handleImportClick = () => {
+    playDiscoSound('click');
     importInputRef.current?.click();
   };
 
@@ -158,6 +167,8 @@ const App: React.FC = () => {
             
             // Basic validation
             if (parsed.html && parsed.name) {
+                playDiscoSound('success');
+                speakGroovy("Import successful!");
                 const importedCreation: Creation = {
                     ...parsed,
                     timestamp: new Date(parsed.timestamp || Date.now()),
@@ -173,10 +184,12 @@ const App: React.FC = () => {
                 // Set as active immediately
                 setActiveCreation(importedCreation);
             } else {
+                playDiscoSound('error');
                 alert("Invalid creation file format.");
             }
         } catch (err) {
             console.error("Import error", err);
+            playDiscoSound('error');
             alert("Failed to import creation.");
         }
         // Reset input

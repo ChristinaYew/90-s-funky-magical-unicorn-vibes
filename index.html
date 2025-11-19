@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unicorn Mafia - Bring It To Life</title>
+    <title>Unicorn Mafia - Grilled Cheese Disco</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PDF.js for rendering PDF previews -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -12,36 +12,22 @@
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Righteous&family=Space+Grotesk:wght@300;400;700&display=swap');
       
       body {
-        font-family: 'Space Grotesk', 'Inter', sans-serif;
-        background-color: #1a0b2e; /* Deep Purple */
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: #0f0518;
         color: #fafafa;
-        background-image: 
-          radial-gradient(at 0% 0%, rgba(255, 105, 180, 0.15) 0px, transparent 50%),
-          radial-gradient(at 100% 0%, rgba(0, 255, 255, 0.15) 0px, transparent 50%),
-          radial-gradient(at 100% 100%, rgba(255, 215, 0, 0.1) 0px, transparent 50%);
-        background-attachment: fixed;
+        overflow-x: hidden;
+      }
+
+      h1, h2, h3, .font-display {
+        font-family: 'Righteous', cursive;
       }
       
       ::selection {
-        background-color: #ff69b4; /* Hot Pink */
-        color: white;
-      }
-
-      /* Disco Grid Background */
-      .bg-disco-grid {
-        background-size: 60px 60px;
-        background-image: 
-          linear-gradient(to right, rgba(255, 105, 180, 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-      }
-
-      /* Smooth scrolling for the whole app */
-      html {
-        scroll-behavior: smooth;
+        background-color: #FFD700; /* Gold */
+        color: #000;
       }
     </style>
   <script type="importmap">

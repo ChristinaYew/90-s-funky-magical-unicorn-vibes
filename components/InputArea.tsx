@@ -4,7 +4,7 @@
 */
 import React, { useCallback, useState, useEffect } from 'react';
 import { ArrowUpTrayIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { StarIcon } from '@heroicons/react/24/solid';
+import { speakGroovy, playDiscoSound } from '../services/audio';
 
 interface InputAreaProps {
   onGenerate: (prompt: string, file?: File) => void;
@@ -14,12 +14,11 @@ interface InputAreaProps {
 
 const CyclingText = () => {
     const words = [
-        "a napkin sketch",
         "a grilled cheese recipe",
-        "a unicorn sanctuary",
-        "a disco floor plan",
-        "a retro synthesizer",
-        "a messy desk photo"
+        "a unicorn manifesto",
+        "a messy napkin sketch",
+        "a 90s rave flyer",
+        "your cat's photo"
     ];
     const [index, setIndex] = useState(0);
     const [fade, setFade] = useState(true);
@@ -30,13 +29,13 @@ const CyclingText = () => {
             setTimeout(() => {
                 setIndex(prev => (prev + 1) % words.length);
                 setFade(true); // fade in
-            }, 500); // Wait for fade out
-        }, 3000); // Slower cycle to read longer text
+            }, 500);
+        }, 3000);
         return () => clearInterval(interval);
     }, [words.length]);
 
     return (
-        <span className={`inline-block whitespace-nowrap transition-all duration-500 transform ${fade ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-90'} text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-500 font-black pb-1 border-b-4 border-purple-500/50`}>
+        <span className={`inline-block whitespace-nowrap transition-all duration-500 transform ${fade ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-90'} text-yellow-400 font-black pb-1 border-b-4 border-pink-500 ml-2`}>
             {words[index]}
         </span>
     );
@@ -49,12 +48,16 @@ export const InputArea: React.FC<InputAreaProps> = ({ onGenerate, isGenerating, 
     if (file.type.startsWith('image/') || file.type === 'application/pdf') {
       onGenerate("", file);
     } else {
+      playDiscoSound('error');
+      speakGroovy("Whoops! Images or PDFs only, cool cat.");
       alert("Please upload an image or PDF.");
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+        playDiscoSound('click');
+        speakGroovy("Oh yeah, let's go baby boy!");
         handleFile(e.target.files[0]);
     }
   };
@@ -64,7 +67,9 @@ export const InputArea: React.FC<InputAreaProps> = ({ onGenerate, isGenerating, 
     setIsDragging(false);
     if (disabled || isGenerating) return;
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+        playDiscoSound('success');
+        speakGroovy("Oh yeah, let's go baby boy!");
+        handleFile(e.dataTransfer.files[0]);
     }
   }, [disabled, isGenerating]);
 
@@ -72,6 +77,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onGenerate, isGenerating, 
     e.preventDefault();
     if (!disabled && !isGenerating) {
         setIsDragging(true);
+        // Throttle sound playing here if we wanted a hover effect, but pure CSS is safer for dragover
     }
   }, [disabled, isGenerating]);
 
@@ -81,68 +87,76 @@ export const InputArea: React.FC<InputAreaProps> = ({ onGenerate, isGenerating, 
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto perspective-1000">
+    <div className="w-full max-w-4xl mx-auto perspective-1000 px-4">
       <div 
         className={`relative group transition-all duration-300 ${isDragging ? 'scale-[1.02] rotate-1' : ''}`}
+        onMouseEnter={() => playDiscoSound('hover')}
       >
+        {/* Decorative Glow Background */}
+        <div className={`absolute -inset-1 bg-gradient-to-r from-pink-600 via-purple-600 to-cyan-600 rounded-[2.5rem] blur opacity-40 group-hover:opacity-75 transition duration-1000 group-hover:duration-200 ${isDragging ? 'opacity-100 animate-pulse' : ''}`}></div>
+
         <label
           className={`
             relative flex flex-col items-center justify-center
-            h-64 sm:h-72 md:h-[24rem]
-            bg-[#130722]/80 
-            backdrop-blur-md
-            rounded-3xl border-2 border-dashed
+            h-72 md:h-[26rem]
+            bg-[#130722] 
+            rounded-[2rem] border-4 border-dashed
             cursor-pointer overflow-hidden
             transition-all duration-300
             ${isDragging 
-              ? 'border-pink-500 bg-[#2a1145] shadow-[0_0_40px_rgba(236,72,153,0.4)]' 
-              : 'border-purple-700 hover:border-pink-500 hover:bg-[#1c0b33] hover:shadow-[0_0_20px_rgba(168,85,247,0.2)]'
+              ? 'border-yellow-400 bg-[#2a1145]' 
+              : 'border-purple-500/50 hover:border-pink-500 hover:bg-[#1c0b33]'
             }
             ${isGenerating ? 'pointer-events-none grayscale' : ''}
           `}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
+          onClick={() => playDiscoSound('click')}
         >
             {/* Funky Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.07] pointer-events-none" 
+            <div className="absolute inset-0 opacity-[0.1] pointer-events-none" 
                  style={{
-                    backgroundImage: 'linear-gradient(45deg, #ff69b4 25%, transparent 25%, transparent 75%, #ff69b4 75%, #ff69b4), linear-gradient(45deg, #ff69b4 25%, transparent 25%, transparent 75%, #ff69b4 75%, #ff69b4)',
-                    backgroundSize: '40px 40px',
-                    backgroundPosition: '0 0, 20px 20px'
+                    backgroundImage: 'radial-gradient(circle, #ff69b4 2px, transparent 2.5px)',
+                    backgroundSize: '24px 24px',
                  }}>
             </div>
             
-            {/* Decorative corners */}
-            <div className={`absolute top-6 left-6 w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_10px_#22d3ee] transition-all duration-300 ${isDragging ? 'scale-150' : ''}`}></div>
-            <div className={`absolute top-6 right-6 w-3 h-3 bg-pink-500 rounded-full shadow-[0_0_10px_#ec4899] transition-all duration-300 ${isDragging ? 'scale-150' : ''}`}></div>
-            <div className={`absolute bottom-6 left-6 w-3 h-3 bg-yellow-400 rounded-full shadow-[0_0_10px_#facc15] transition-all duration-300 ${isDragging ? 'scale-150' : ''}`}></div>
-            <div className={`absolute bottom-6 right-6 w-3 h-3 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7] transition-all duration-300 ${isDragging ? 'scale-150' : ''}`}></div>
+            {/* Decorative corners - 90s Style */}
+            <div className={`absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-cyan-400 rounded-tl-3xl transition-all ${isDragging ? 'translate-x-2 translate-y-2' : ''}`}></div>
+            <div className={`absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-pink-500 rounded-tr-3xl transition-all ${isDragging ? '-translate-x-2 translate-y-2' : ''}`}></div>
+            <div className={`absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-yellow-400 rounded-bl-3xl transition-all ${isDragging ? 'translate-x-2 -translate-y-2' : ''}`}></div>
+            <div className={`absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-purple-500 rounded-br-3xl transition-all ${isDragging ? '-translate-x-2 -translate-y-2' : ''}`}></div>
 
-            <div className="relative z-10 flex flex-col items-center text-center space-y-6 md:space-y-8 p-6 md:p-8 w-full">
-                <div className={`relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-transform duration-500 ${isDragging ? 'scale-125 rotate-12' : 'group-hover:-translate-y-2'}`}>
-                    <div className={`absolute inset-0 rounded-full bg-gradient-to-tr from-pink-600 to-purple-600 blur-lg opacity-70 ${isGenerating ? 'animate-pulse' : ''}`}></div>
-                    <div className="absolute inset-0 rounded-full bg-zinc-900/90 border border-white/10 flex items-center justify-center z-10">
+            <div className="relative z-10 flex flex-col items-center text-center space-y-8 p-8 w-full">
+                <div className={`relative w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center transition-transform duration-500 ${isDragging ? 'scale-110 rotate-12' : 'group-hover:scale-105'}`}>
+                    <div className={`absolute inset-0 rounded-full bg-gradient-to-tr from-pink-500 to-yellow-500 blur-lg opacity-50 ${isGenerating ? 'animate-spin' : ''}`}></div>
+                    <div className="absolute inset-0 rounded-full bg-[#0f0518] border-2 border-white/20 flex items-center justify-center z-10 overflow-hidden">
                         {isGenerating ? (
-                            <SparklesIcon className="w-10 h-10 md:w-12 md:h-12 text-yellow-400 animate-spin-slow" />
+                            <SparklesIcon className="w-12 h-12 text-yellow-400 animate-bounce" />
                         ) : (
-                            <ArrowUpTrayIcon className={`w-10 h-10 md:w-12 md:h-12 text-white transition-all duration-300 ${isDragging ? '-translate-y-1 text-pink-400' : ''}`} />
+                            <ArrowUpTrayIcon className={`w-12 h-12 text-white transition-all duration-300 ${isDragging ? '-translate-y-2 text-cyan-400' : ''}`} />
+                        )}
+                        
+                        {/* Equalizer Bars Effect */}
+                        {!isGenerating && (
+                            <div className="absolute bottom-4 flex space-x-1 h-8 items-end opacity-50">
+                                <div className="w-1 bg-pink-500 animate-[bounce_1s_infinite] h-4"></div>
+                                <div className="w-1 bg-cyan-500 animate-[bounce_1.2s_infinite] h-6"></div>
+                                <div className="w-1 bg-yellow-500 animate-[bounce_0.8s_infinite] h-3"></div>
+                                <div className="w-1 bg-purple-500 animate-[bounce_1.1s_infinite] h-5"></div>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="space-y-2 md:space-y-4 w-full max-w-3xl">
-                    <h3 className="flex flex-col items-center justify-center text-xl sm:text-3xl md:text-5xl text-white leading-none font-bold tracking-tight gap-4">
-                        <span>Transform</span>
-                        {/* Fixed height container to prevent layout shifts */}
-                        <div className="h-10 sm:h-12 md:h-16 flex items-center justify-center w-full">
-                           <CyclingText />
-                        </div>
-                        <span>into magic.</span>
+                <div className="space-y-4 w-full max-w-3xl">
+                    <h3 className="text-2xl sm:text-4xl md:text-5xl text-white font-display tracking-tight">
+                        Dunk <CyclingText />
                     </h3>
-                    <p className="text-pink-200/60 text-sm sm:text-lg font-medium tracking-wide max-w-lg mx-auto">
-                        <span className="hidden md:inline">Drag & drop your messy ideas.</span>
-                        <span className="md:hidden">Tap to upload.</span> We'll add the disco ball.
+                    <p className="text-pink-300 text-lg font-medium tracking-wide max-w-lg mx-auto">
+                        Drop your files like it's 1999. <br/>
+                        <span className="text-white/60 text-sm">(PDFs & Images accepted by the Mafia)</span>
                     </p>
                 </div>
             </div>
